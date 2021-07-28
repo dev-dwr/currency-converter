@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: currency-converter-app
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: currency-converter
+  replicas: 1
+  template:
+    metadata:
+      name: currency-converter
+      labels:
+        app: currency-converter
+    spec:
+      containers:
+        - name: currency-converter
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: currency-postgres-config
+                  key: postgres_user
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: currency-postgres-secret
+                  key: password
+            - name: POSTGRES_HOST
+                valueFrom:
+                  configMapKeyRef:
+                    name: currency-hostname-config
+                    key: postgres_host
+            - name: POSTGRES_DB
+                valueFrom:
+                  configMapKeyRef:
+                    name: currency-postgres-config
+                    key: postgres_db
+            - name: POSTGRES_PORT
+                valueFrom:
+                  configMapKeyRef:
+                    name: currency-postgres-config
+                    key: postgres_port
+          image: devdwr/currency-converter-app:1.0
